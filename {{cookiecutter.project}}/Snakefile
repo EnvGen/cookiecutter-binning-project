@@ -1,0 +1,159 @@
+__author__ = "Inodb, Alneberg"
+__license__ = "MIT"
+
+
+configfile: "config.json"
+
+import os
+import glob
+
+# Dynamically generate the missing items in the config dicionary here
+# i.e. load config["bowtie2_rules"]["units"] with a dictionary of 
+# the fastq files, pair is an unit. Collect the units originating to the
+# same sample in the config["bowtie2_rules"]["samples"].
+
+# Example:   
+for read_dir in config["fastq_dirs"]
+    for sample in os.listdir(read_dir):
+        sample_dir_path = os.path.join(read_dir, sample)
+        config["bowtie2_rules"]["samples"][sample] = []
+
+        # Every sample should have a subdirectory for each unit
+        for unit in os.listdir(sample_dir_path):
+            # Every unit dir should have exactly 2 fastq files
+            # the units list store the path to these files
+            units = [os.path.join(sample_dir_path, unit, fastq_file) for fastq_file in os.listdir(os.path.join(sample_dir_path, unit)]
+
+            config["bowtie2_rules"]["samples"][sample].append(unit)
+            config["bowtie2_rules"]["units"][unit] = units
+
+# Add the assembly to bowtie2_rules
+config["assemblies"] = []
+for assembly_dir in config["assembly_dir"]:
+    for assembly in os.listdir(assembly_dir):
+        config["assemblies"].append(os.path.join(assembly_dir,assembly))
+
+# add assemblies to concoct assemblies
+config["concoct_rules"]["assemblies"] = {os.path.basename(p).replace(".asm.fasta.gz", ""): p for p in config["assemblies"]}
+
+# Show all bowtie2 logs and markduplicate percent duplications in the mapping report
+#config["mapping_report_rules"]["bowtie2_logs"] = sorted(expand("mapping/bowtie2/{mapping_params}/{reference}/units/{unit}.log",
+#                                                        mapping_params=config["bowtie2_rules"]["mapping_params"],
+#                                                        reference=config["bowtie2_rules"]["references"],
+#                                                        unit=config["bowtie2_rules"]["units"]))
+#
+#config["mapping_report_rules"]["markduplicates_metrics"] = sorted(expand("mapping/bowtie2/{mapping_params}/{reference}/units/{unit}.sorted.removeduplicates.metrics",
+#                                                                  mapping_params=config["bowtie2_rules"]["mapping_params"],
+#                                                                  reference=config["bowtie2_rules"]["references"],
+#                                                                  unit=config["bowtie2_rules"]["units"]))
+
+SM_WORKFLOW_LOC="https://raw.githubusercontent.com/{{cookiecutter.snakemake_workflows_repo}}/{{workflow_commit}}/"
+include: SM_WORKFLOW_LOC + "common/rules/track_dir.rules"
+include: SM_WORKFLOW_LOC + "bio/ngs/rules/assembly/report.rules"
+include: SM_WORKFLOW_LOC + "bio/ngs/rules/mapping/bowtie2.rules"
+include: SM_WORKFLOW_LOC + "bio/ngs/rules/mapping/samtools.rules"
+include: SM_WORKFLOW_LOC + "bio/ngs/rules/mapping/report.rules"
+include: SM_WORKFLOW_LOC + "bio/ngs/rules/binning/concoct.rules"
+include: SM_WORKFLOW_LOC + "bio/ngs/rules/annotation/prodigal.rules"
+include: SM_WORKFLOW_LOC + "bio/ngs/rules/blast/rpsblast.rules"
+include: SM_WORKFLOW_LOC + "bio/ngs/rules/annotation/hmmer.rules"
+localrules: track_changes
+
+# Change this when running with fasta reads
+ruleorder: bowtie2_map > bowtie2_map_fasta > sample_merge > remove_mark_duplicates > bam_sort > sam_to_bam
+# Change this when running with non gzipped contigs files
+ruleorder: concoct_cutup_gz_10K > concoct_cutup_10K
+
+rule report:
+    input:
+        "report/mapping/index.html",
+        "report/concoct/index.html",
+        "report/notebooks_output/bin_overview.html"
+    output:
+        "report/index.html"
+    shell:
+        """
+        (
+            echo '<html><head><style>body {{ text-align: center }}</style></head><body>'
+            echo "<a href='fastqc/index.html'>FastQC Results</a><br />"
+            echo "<a href='assemblies/index.html'>Assembly Results</a><br />"
+            echo "<a href='mapping/index.html'>Mapping Results</a><br />"
+            echo "<a href='concoct/index.html'>CONCOCT Results</a><br />"
+            echo "<a href='notebooks_output/bin_overview.html'>Binning Overview</a><br />"
+            echo "<a href='http://nbviewer.ipython.org/urls/github.com/inodb/2014-05-mdopson-viral/tree/master/notebooks'>Notebooks</a><br />"
+            echo '</body></html>'
+        ) > {output}
+        """
+
+#  add regular assemblies for prodigal to predict genes for
+for a_name, a in config["concoct_rules"]["assemblies"].items():
+    config["prodigal_rules"]["assemblies"][a_name] = a 
+
+#  add prodigal predicted genes as query for rpsblast
+config["rpsblast_rules"]["query_aas"] = {a: "annotation/prodigal/default-meta/{a}/proteins/proteins.faa".format(a=a) for a in config["prodigal_rules"]["assemblies"]}
+
+#  add prodigal predicted genes as query for hmmer
+config["hmmer_rules"]["query_aas"] = config["rpsblast_rules"]["query_aas"]
+
+rule merge_concoct_results:
+    input:
+        "concoct/{assembly}/output/{concoct_params}/clustering.csv"
+    output:
+        "concoct/{assembly}/output/{concoct_params}/clustering_merged.csv"
+    shell:
+        """
+            {config[concoct_rules][load_env]}
+            python {config[toolbox_dir]}/scripts/concoct/majority_merge_cutup_clustering.py {input} > {output}
+        """
+
+rule concoct_eval_cog_table_merged:
+    """
+    Generate COG table from rpsblast output and concoct binning results
+    """
+    input:
+        clust="concoct/{assembly}/output/{concoct_params}/clustering_merged.csv",
+        rpsblast="blast/rpsblast/default-concoct/cog/{assembly}/rpsblast.out"
+    output:
+        "concoct/{assembly}/evaluation/scg/{concoct_params}/clustering_scg_merged.tsv"
+    shell:
+        """
+        {config[concoct_rules][load_env]}
+        python {config[concoct_rules][scripts_dir]}/COG_table.py \
+            -b {input.rpsblast} \
+            -m {config[concoct_rules][scripts_dir]}/../scgs/scg_cogs_min0.97_max1.03_unique_genera.txt \
+            -c {input.clust} \
+            --cdd_cog_file {config[concoct_rules][scripts_dir]}/../scgs/cdd_to_cog.tsv \
+            > {output}
+        """
+
+rule concoct_eval_cog_plot_merged:
+    """
+    Plot COGs using COG table
+    """
+    input:
+        "concoct/{assembly}/evaluation/scg/{concoct_params}/clustering_scg_merged.tsv"
+    output:
+        "concoct/{assembly}/evaluation/scg/{concoct_params}/clustering_scg_merged.pdf"
+    shell:
+        """
+        {config[concoct_rules][load_env]}
+        Rscript {config[concoct_rules][scripts_dir]}/COGPlot.R \
+            -s {input} \
+            -o {output}
+        """
+
+rule concoct_eval_all:
+    """
+    Plot COGs using COG table for both merged and cutup
+    """
+    input:
+        expand("concoct/{assembly}/evaluation/scg/{concoct_params}/clustering_scg_merged.pdf",
+                assembly=config["concoct_rules"]["assemblies"],
+                concoct_params = config["concoct_rules"]["concoct_params"]),
+        expand("concoct/{assembly}/evaluation/scg/{concoct_params}/clustering_scg.pdf",
+                assembly=config["concoct_rules"]["assemblies"],
+                concoct_params = config["concoct_rules"]["concoct_params"])
+
+rule track_changes:
+    input:
+        "results_track.txt"
