@@ -1,7 +1,10 @@
 {
-    "project": "binning-mimebs",
+    "project": "binning-project",
     "snakemake_workflows_repo": "EnvGen/snakemake-workflows",
     "workflow_commit": "master",
-    "toolbox_repo": "EnvGen/toolbox",
-    "tooblox_commit": "master"
+    "toolbox_github_repo": "EnvGen/toolbox",
+    "toolbox_commit": "master",
+    "assembly_dir": "contigs",
+    "fastq_dir": "reads",
+    "github_project_remote": "git@github.com:alneberg/binning-mimebs.git"
 }

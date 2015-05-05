@@ -41,10 +41,10 @@
             "default-concoct": "-E 0.0001 --cpu 16"
         },
         "databases": {
-            "all_pog": {{cookiecutter.pog_database}}
+            "all_pog": "{{cookiecutter.pog_database}}"
         }
     },
-"assembly_dir": {{cookiecutter.assembly_dirs}},
-"fastq_dirs": {{cookiecutter.fastq_dirs}},
-"toolbox_dir": "repos/toolbox"
+"assembly_dir": ["{{cookiecutter.assembly_dir}}"],
+"fastq_dirs": ["{{cookiecutter.fastq_dir}}"],
+"toolbox_dir": "toolbox"
 }
