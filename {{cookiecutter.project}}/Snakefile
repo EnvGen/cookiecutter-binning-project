@@ -36,7 +36,7 @@ for assembly_dir in config["assembly_dir"]:
         config["assemblies"].append(os.path.join(assembly_dir,assembly))
 
 # add assemblies to concoct assemblies
-config["concoct_rules"]["assemblies"] = {os.path.basename(p).replace(".asm.fasta.gz", ""): p for p in config["assemblies"]}
+config["concoct_rules"]["assemblies"] = {os.path.basename(p).replace(".fasta", ""): p for p in config["assemblies"]}
 
 SM_WORKFLOW_LOC="https://raw.githubusercontent.com/{{cookiecutter.snakemake_workflows_repo}}/{{cookiecutter.workflow_commit}}/"
 include: SM_WORKFLOW_LOC + "common/rules/track_dir.rules"
