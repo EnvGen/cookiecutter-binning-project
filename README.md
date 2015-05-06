@@ -1,4 +1,4 @@
-Cookiecutter Bining Project
+Cookiecutter Bining Project [![Build Status](https://travis-ci.org/EnvGen/cookiecutter-binning-project.svg?branch=master)](https://travis-ci.org/EnvGen/cookiecutter-binning-project)
 ===========================
 A template repository for starting a new binning project with the snakemake-workflows.
 
