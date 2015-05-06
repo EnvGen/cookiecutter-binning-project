@@ -23,6 +23,8 @@ install:
   - git clone https://github.com/EnvGen/cookiecutter-binning-project-demo.git
   - cd cookiecutter-binning-project-demo
   - chmod +x run_all.sh
+  - git config --global user.email test@example.com
+  - git config --global user.name "John Doe"
 # command to run tests
 script: ./run_all.sh
 
