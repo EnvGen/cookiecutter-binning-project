@@ -1,6 +1,6 @@
 {
     "sbatch_general": {
-        "account": "b2015063",
+        "account": "{{ cookiecutter.uppmax_project_billing }}",
         "wrapper_script": "/proj/b2010008/bin/sbatch_job"
     },
     "schedule_default": {
