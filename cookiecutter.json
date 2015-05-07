@@ -4,7 +4,7 @@
     "workflow_commit": "master",
     "toolbox_github_repo": "EnvGen/toolbox",
     "toolbox_commit": "master",
-    "assembly_dir": "contigs",
-    "fastq_dir": "reads",
+    "assembly_dir": "data/contigs",
+    "fastq_dir": "data/reads",
     "github_project_remote": "git@github.com:alneberg/binning-mimebs.git"
 }
