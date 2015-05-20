@@ -7,5 +7,6 @@
     "assembly_dir": "data/contigs",
     "fastq_dir": "data/reads",
     "github_project_remote": "git@github.com:alneberg/binning-mimebs.git",
-    "uppmax_project_billing": "b2010008"
+    "uppmax_project_billing": "b2010008",
+    "conda_concoct_env": "concoct"
 }
