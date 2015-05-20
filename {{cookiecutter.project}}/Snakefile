@@ -47,6 +47,12 @@ for submodule in submodules:
         print(submodule_status)
         raise Exception("Submodule {} is dirty. Commit changes before proceeding.".format(submodule))
 
+# Annotate approved bins with prokka_extended (will only work after 
+# the approved bins have been created)
+for contigs_f in glob.glob("concoct/approved_scg_bins/*.fa"):
+    contigs = contigs_f.split('/')[-1].split('.')[0]
+    config["prokka_extended_rules"]["contigs"][contigs] = contigs_f
+
 SM_WORKFLOW_LOC="snakemake-workflows/"
 include: SM_WORKFLOW_LOC + "common/rules/track_dir.rules"
 include: SM_WORKFLOW_LOC + "bio/ngs/rules/assembly/report.rules"
@@ -70,12 +76,6 @@ config["rpsblast_rules"]["query_aas"] = {a: "annotation/prodigal/default-meta/{a
 
 #  add prodigal predicted genes as query for hmmer
 config["hmmer_rules"]["query_aas"] = config["rpsblast_rules"]["query_aas"]
-
-# Annotate approved bins with prokka_extended (will only work after 
-# the approved bins have been created)
-for contigs_f in glob.glob("concoct/approved_scg_bins/*.fa"):
-    contigs = contigs_f.split('/')[-1].split('.')[0]
-    config["prokka_extended_rules"]["contigs"][contigs] = contigs_f
 
 rule track_changes:
     input:
