@@ -58,6 +58,7 @@ include: SM_WORKFLOW_LOC + "bio/ngs/rules/binning/concoct_eval.rules"
 include: SM_WORKFLOW_LOC + "bio/ngs/rules/annotation/prodigal.rules"
 include: SM_WORKFLOW_LOC + "bio/ngs/rules/blast/rpsblast.rules"
 include: SM_WORKFLOW_LOC + "bio/ngs/rules/annotation/hmmer.rules"
+include: SM_WORKFLOW_LOC + "bio/ngs/rules/annotation/prokka.rules"
 localrules: track_changes
 
 #  add regular assemblies for prodigal to predict genes for
