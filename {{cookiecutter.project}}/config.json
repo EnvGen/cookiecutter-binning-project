@@ -10,6 +10,9 @@
     "picard_jars": "/sw/apps/bioinfo/picard/1.118/milou"
 },
 "mapping_report_rules": {},
+"kallisto_rules": {
+    "load_env": ""
+},
 "concoct_rules": {
     "load_env": "source activate {{cookiecutter.conda_concoct_env}} && module load bioinfo-tools MUMmer/3.23 # CONCOCT dev f4cb9fcb",
     "mapper": "bowtie2",

@@ -30,6 +30,7 @@ for read_dir in config["fastq_dirs"]:
             config["bowtie2_rules"]["samples"][sample].append(unit)
             config["bowtie2_rules"]["units"][unit] = units
 
+
 # Add the assembly to bowtie2_rules
 config["assemblies"] = []
 for assembly_dir in config["assembly_dir"]:
@@ -38,6 +39,10 @@ for assembly_dir in config["assembly_dir"]:
 
 # add assemblies to concoct assemblies
 config["concoct_rules"]["assemblies"] = {os.path.basename(p).replace(".fasta", ""): p for p in config["assemblies"]}
+
+config["kallisto_rules"]["samples"] = config["bowtie2_rules"]["samples"]
+config["kallisto_rules"]["units"] = config["bowtie2_rules"]["units"]
+config["kallisto_rules"]["references"] = config["concoct_rules"]["assemblies"]
 
 # Check that no git repo is dirty
 submodules = ["snakemake-workflows", "toolbox"]
@@ -58,6 +63,7 @@ include: SM_WORKFLOW_LOC + "bio/ngs/rules/binning/concoct_eval.rules"
 include: SM_WORKFLOW_LOC + "bio/ngs/rules/annotation/prodigal.rules"
 include: SM_WORKFLOW_LOC + "bio/ngs/rules/blast/rpsblast.rules"
 include: SM_WORKFLOW_LOC + "bio/ngs/rules/annotation/hmmer.rules"
+include: SM_WORKFLOW_LOC + "bio/ngs/rules/quantification/kallisto.rules"
 localrules: track_changes
 
 #  add regular assemblies for prodigal to predict genes for
