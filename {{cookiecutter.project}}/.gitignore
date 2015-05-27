@@ -3,4 +3,5 @@
 concoct/*
 mapping/*
 annotation/*
-.snakemake/*
+quantification/*
+.snakemake*
