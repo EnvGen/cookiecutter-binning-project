@@ -26,7 +26,7 @@ for submodule in submodules:
 # Add all samples that should be annotated with prokka extended
 for contigs_f in glob.glob("samples/*/Contigs.fa"):
     sample = contigs_f.split('/')[-2]
-    config["prokka_extended_rules"]["contigs"][contigs] = contigs_f
+    config["prokka_extended_rules"]["contigs"][sample] = contigs_f
 
 SM_WORKFLOW_LOC="snakemake-workflows/"
 include: SM_WORKFLOW_LOC + "bio/ngs/rules/annotation/prokka.rules"
