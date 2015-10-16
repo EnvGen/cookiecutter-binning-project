@@ -1,6 +1,6 @@
-Cookiecutter Bining Project [![Build Status](https://travis-ci.org/EnvGen/cookiecutter-binning-project.svg?branch=master)](https://travis-ci.org/EnvGen/cookiecutter-binning-project)
+Cookiecutter Bining Project [![Build Status](https://travis-ci.org/EnvGen/cookiecutter-binning-project.svg?branch=try_prokka_extended)](https://travis-ci.org/EnvGen/cookiecutter-binning-project)
 ===========================
-A template repository for starting a new binning project with the snakemake-workflows.
+A template repository for running a annotation using the 'prokka extended' workflow.
 
 Warning
 -------
