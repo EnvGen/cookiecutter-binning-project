@@ -5,6 +5,8 @@ import argparse
 import os
 import logging
 
+PROJECT_NAME = "{{cookiecutter.project}}"
+
 COMMIT = "{{cookiecutter.toolbox_commit}}"
 GITHUB_PROJECT_REMOTE = "{{cookiecutter.github_project_remote}}"
 
@@ -18,6 +20,10 @@ LOGFILE_LOCATION = os.path.expanduser("{{cookiecutter.logfile_location}}")
 
 def main(args):
     # Create logfile with link to main.log within repo
+    LOGFILE_LOCATION = LOGFILE_LOCATION.format(year=datetime.now().year,
+            month=datetime.now().month,
+            project_name=PROJECT_NAME)
+
     if os.path.isfile(LOGFILE_LOCATION):
         raise Exception("Logfile already exists, please delete it and start over")
 
@@ -26,6 +32,11 @@ def main(args):
 
     logging.basicConfig(format='%(asctime)s %(message)s', filename='main.log', level=logging.INFO) 
     os.system('git init')
+
+    GITHUB_PROJECT_REMOTE=GITHUB_PROJECT_REMOTE.format(year=datetime.now().year,
+            month=datetime.now().month,
+            project_name=PROJECT_NAME)
+
     os.system('git remote add origin {0}'.format(GITHUB_PROJECT_REMOTE))
     logging.info("Initalized git repo with remote {0}".format(GITHUB_PROJECT_REMOTE))
 
