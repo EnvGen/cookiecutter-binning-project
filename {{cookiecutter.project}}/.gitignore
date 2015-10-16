@@ -1,5 +1,3 @@
-{{ cookiecutter.assembly_dir }}*
-{{ cookiecutter.fastq_dir }}*
 concoct/*
 mapping/*
 annotation/*
