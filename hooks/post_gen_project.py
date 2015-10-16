@@ -8,7 +8,7 @@ import logging
 PROJECT_NAME = "{{cookiecutter.project}}"
 
 COMMIT = "{{cookiecutter.toolbox_commit}}"
-GITHUB_PROJECT_REMOTE = "{{cookiecutter.github_project_remote}}"
+GITHUB_PROJECT_REMOTE_INPUT = "{{cookiecutter.github_project_remote}}"
 
 WORKFLOW_REPO = "{{cookiecutter.snakemake_workflows_repo}}"
 WORKFLOW_COMMIT = "{{cookiecutter.workflow_commit}}"
@@ -16,11 +16,11 @@ WORKFLOW_COMMIT = "{{cookiecutter.workflow_commit}}"
 TOOLBOX_GITHUB_REPO = "{{cookiecutter.toolbox_github_repo}}"
 TOOLBOX_COMMIT = "{{cookiecutter.toolbox_commit}}" 
 
-LOGFILE_LOCATION = os.path.expanduser("{{cookiecutter.logfile_location}}")
+LOGFILE_LOCATION_INPUT = os.path.expanduser("{{cookiecutter.logfile_location}}")
 
 def main(args):
     # Create logfile with link to main.log within repo
-    LOGFILE_LOCATION = LOGFILE_LOCATION.format(year=datetime.now().year,
+    LOGFILE_LOCATION = LOGFILE_LOCATION_INPUT.format(year=datetime.now().year,
             month=datetime.now().month,
             project_name=PROJECT_NAME)
 
@@ -33,7 +33,7 @@ def main(args):
     logging.basicConfig(format='%(asctime)s %(message)s', filename='main.log', level=logging.INFO) 
     os.system('git init')
 
-    GITHUB_PROJECT_REMOTE=GITHUB_PROJECT_REMOTE.format(year=datetime.now().year,
+    GITHUB_PROJECT_REMOTE=GITHUB_PROJECT_REMOTE_INPUT.format(year=datetime.now().year,
             month=datetime.now().month,
             project_name=PROJECT_NAME)
 
