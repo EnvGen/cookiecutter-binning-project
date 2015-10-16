@@ -4,6 +4,7 @@
 import argparse
 import os
 import logging
+from datetime import date
 
 PROJECT_NAME = "{{cookiecutter.project}}"
 
@@ -19,9 +20,12 @@ TOOLBOX_COMMIT = "{{cookiecutter.toolbox_commit}}"
 LOGFILE_LOCATION_INPUT = os.path.expanduser("{{cookiecutter.logfile_location}}")
 
 def main(args):
+    year = date.today().year
+    month = date.today().month
+
     # Create logfile with link to main.log within repo
-    LOGFILE_LOCATION = LOGFILE_LOCATION_INPUT.format(year=datetime.now().year,
-            month=datetime.now().month,
+    LOGFILE_LOCATION = LOGFILE_LOCATION_INPUT.format(year=year,
+            month=month,
             project_name=PROJECT_NAME)
 
     if os.path.isfile(LOGFILE_LOCATION):
@@ -33,8 +37,8 @@ def main(args):
     logging.basicConfig(format='%(asctime)s %(message)s', filename='main.log', level=logging.INFO) 
     os.system('git init')
 
-    GITHUB_PROJECT_REMOTE=GITHUB_PROJECT_REMOTE_INPUT.format(year=datetime.now().year,
-            month=datetime.now().month,
+    GITHUB_PROJECT_REMOTE=GITHUB_PROJECT_REMOTE_INPUT.format(year=year,
+            month=month,
             project_name=PROJECT_NAME)
 
     os.system('git remote add origin {0}'.format(GITHUB_PROJECT_REMOTE))
