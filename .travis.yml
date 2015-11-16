@@ -25,6 +25,7 @@ install:
   - chmod +x run_all.sh
   - git config --global user.email test@example.com
   - git config --global user.name "John Doe"
+  - mkdir $HOME/logs
 # command to run tests
 script: ./run_all.sh
 
