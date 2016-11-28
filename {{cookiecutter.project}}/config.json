@@ -6,8 +6,9 @@
     "load_env": "module load bioinfo-tools bowtie2/2.2.3 samtools/1.1"
 },
 "samtools_rules": {
-    "load_env": "module load bioinfo-tools samtools/1.1 BEDTools/2.21.0 picard/1.118",
-    "picard_jars": "/sw/apps/bioinfo/picard/1.118/milou"
+    "load_env": "module load bioinfo-tools samtools/1.3 BEDTools/2.21.0 picard/1.118",
+    "picard_jars": "/sw/apps/bioinfo/picard/1.118/milou",
+    "threads_for_sorting": "16"
 },
 "mapping_report_rules": {},
 "concoct_rules": {
@@ -20,7 +21,7 @@
     "scripts_dir": "{{cookiecutter.conda_concoct_dir}}/scripts"
 },
 "prodigal_rules": {
-    "load_env": "module load bioinfo-tools prodigal/2.60",
+    "load_env": "module load bioinfo-tools prodigal/2.6.3",
     "prodigal_params": {
         "default-meta": "-p meta"
     }
@@ -28,22 +29,121 @@
 "rpsblast_rules": {
     "load_env": "module load bioinfo-tools blast/2.2.29+ gnuparallel/20140222",
     "rpsblast_params": {
-        "default-concoct": "-outfmt '6 qseqid sseqid evalue pident score qstart qend sstart send length slen' -max_target_seqs 1 -evalue 0.00001"
+        "default-concoct": "-outfmt '6 qseqid sseqid evalue pident score qstart qend sstart send length slen' -max_target_seqs 1 -evalue 0.00001",
+        "only-evalue": "-outfmt '6 qseqid sseqid evalue pident score qstart qend sstart send length slen' -evalue 0.00001"
     },
     "databases": {
-        "cog": "/sw/data/uppnex/cdd/little_endian/Cog"
+        "cog": "/sw/data/uppnex/cdd/little_endian/Cog",
+        "pfam": "/sw/data/uppnex/cdd/little_endian/Pfam",
+        "tigr": "/sw/data/uppnex/cdd/little_endian/Tigr"
     },
-    "parallel_params": "-N 10 --env PATH"
+    "parallel_params": "-N 16 --env PATH",
+    "query_aas": {}
 },
-"hmmer_rules": {
-        "load_env": "module load bioinfo-tools hmmer/3.1b1-gcc",
-        "hmmer_params": {
-            "default-concoct": "-E 0.0001 --cpu 16"
+"fastqc_rules": {
+    "load_env": "module load bioinfo-tools FastQC/0.11.2"
+},
+"cutadapt_rules": {
+    "load_env": "module load bioinfo-tools cutadapt/1.8.0",
+    "trim_params": {
+        "quality_adapter_no_indices": {
+            "1": {
+                "trim_end": "-q 15,15",
+                "trim_start": "-u 0"
+                },
+            "2": {
+                "trim_end": "-q 15,15",
+                "trim_start": "-u 0"
+                },
+            "variable_template": "-n 3 --minimum-length 31 -a {R1_first} -G '^CGTGTGCTCTTCCGATCT' -A {R2_rev_end}",
+            "common_variables": {
+                "R1_first": "AGATCGGAAGAGCACACGTCTGAACTCCAGTCAC",
+                "R1_end": "ATCTCGTATGCCGTCTTCTGCTTG",
+                "R2_rev_end": "AGATCGGAAGAGCGTCGTGTAGGGAAAGAGTGT",
+                "R2_rev_first": "GTGTAGATCTCGGTGGTCGCCGTATCATT"
+            }
         },
+        "quality_and_indices": {
+            "1": {
+                "trim_end": "-q 15,15",
+                "trim_start": "-u 0"
+                },
+            "2": {
+                "trim_end": "-q 15,15",
+                "trim_start": "-u 0"
+                },
+            "variable_template": "-n 3 --minimum-length 31 -a {R1_first}{R1_index}{R1_end} -G '^CGTGTGCTCTTCCGATCT' -A {R2_rev_end}{R2_rev_index}{R2_rev_first}",
+            "common_variables": {
+                "R1_first": "AGATCGGAAGAGCACACGTCTGAACTCCAGTCAC",
+                "R1_end": "ATCTCGTATGCCGTCTTCTGCTTG",
+                "R2_rev_end": "AGATCGGAAGAGCGTCGTGTAGGGAAAGAGTGT",
+                "R2_rev_first": "GTGTAGATCTCGGTGGTCGCCGTATCATT"
+            }
+        }
+    }
+},
+"fastuniq_rules": {
+},
+"megahit_rules": {
+    "load_env": "",
+    "assembly_params": {"default": ""},
+    "coassembly_params": {"default": "-m 0.99 --continue"},
+    "filter_length_script": "{{cookiecutter.toolbox_dir}}/scripts/filter_fasta_on_length.py",
+    "split_in_parts_script": "{{cookiecutter.toolbox_dir}}/scripts/split_fasta.py",
+    "coassembly_pre_annotation_length_threshold": "1000",
+    "coassembly_pre_annotation_sequences_per_part": "20000"
+},
+"prokka_extended_rules": {
+    "dbs": ["cog", "pfam", "tigr"],
+    "prokka_name": "prokka_mod",
+    "load_env": "source activate {{cookiecutter.conda_concoct_env}} && module load bioinfo-tools BioPerl blast/2.2.28+ hmmer prodigal/2.6.3 gnuparallel",
+    "cddid_all": "/proj/b2010008/nobackup/database/cddid_all.tbl",
+    "get_prokka_annotation_script": "{{cookiecutter.toolbox_dir}}/scripts/extended_prokka/get.prokka.annotation.py",
+    "collate_annotations_script": "{{cookiecutter.toolbox_dir}}/scripts/extended_prokka/collate.annotations.py",
+    "gff_to_bed_script": "{{cookiecutter.toolbox_dir}}/scripts/extended_prokka/prokkagff2bed.sh", 
+    "cog_categories_script": "toolbox/scripts/extended_prokka/cog_categories.py",
+    "cog_categories_data": "toolbox/scripts/extended_prokka/data/cogs.csv",
+    "prokka_ops": "--metagenome",
+    "EXTEND": {
+        "gff": "{{cookiecutter.toolbox_dir}}/scripts/extended_prokka/extend_gff.py"
+    },
+    "contigs": {},
+    "threads": "4",
+    "locustags": {},
+    "include_evalue_for_tables": "true",
+    "rpsblast_parameter_set": {
+        "pfam": "only-evalue",
+        "cog": "default-concoct",
+        "tigr": "default-concoct"
+    },
+    "multiple_annotations_per_gene": {
+        "pfam": "true",
+        "cog": "false",
+        "tigr": "false"
+    }
+}, 
+"python2": "~/miniconda/envs/BLUEPRINT_pipeline_2.7/bin/python2.7",
+"taxonomic_annotation": {
+    "load_env": "module load bioinfo-tools MEGAN/5.11.3",
+    "databases_to_use": ["nr"],
+    "diamond": {
         "databases": {
-            "all_pog": "{{cookiecutter.pog_database}}"
+            "nr": "/proj/b2010008/nobackup/database/nr/diamond/nr.db.dmnd"
         }
     },
+    "megan": {
+        "tax_gi_file": "/proj/b2010008/nobackup/database/gi_taxid-March2015X.bin",
+        "max_evalue": "0.000001",
+        "license_file": "/proj/b2014214/src/MEGAN5-academic-license.txt"
+    },
+    "lca_script": {
+        "load_env": "source activate {{cookiecutter.conda_concoct_env}}",
+        "lca_script": "{{cookiecutter.toolbox_dir}}/scripts/taxonomy_from_genes_to_contigs/lca_per_contig.py",
+        "ncbi_tree": "/proj/b2014214/nobackup/databases/megan/ncbi.tre",
+        "ncbi_map": "/proj/b2014214/nobackup/databases/megan/ncbi.map",
+        "nodes_dmp": "/proj/b2014214/nobackup/databases/megan/nodes.dmp"
+    }
+},
 "assembly_dir": ["{{cookiecutter.assembly_dir}}"],
 "fastq_dirs": ["{{cookiecutter.fastq_dir}}"],
 "toolbox_dir": "toolbox"
