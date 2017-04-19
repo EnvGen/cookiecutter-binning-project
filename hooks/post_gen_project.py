@@ -4,6 +4,7 @@
 import argparse
 import os
 import logging
+import glob
 
 GITHUB_PROJECT_REMOTE = "{{cookiecutter.github_project_remote}}"
 
