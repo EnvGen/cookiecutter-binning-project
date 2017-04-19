@@ -26,7 +26,8 @@ def main(args):
     # Add snakemake-workflows as submodule
     os.system('git submodule add https://github.com/{} snakemake-workflows'.format(WORKFLOW_REPO))
     subworkflow_files = os.path.join(os.path.join("snakemake-workflows", "workflows"), SUBWORKFLOW_NAME)
-    
+   
+    logging.info("Adding files from {} (path: {})".format(SUBWORKFLOW_NAME, subworkflow_files))
     for workflow_file_path in glob.glob(subworkflow_files + "/*"):
         workflow_file_name = os.path.basename(workflow_file_path) 
         if not workflow_file_name == "Snakefile":
