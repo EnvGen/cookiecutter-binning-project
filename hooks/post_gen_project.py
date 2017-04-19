@@ -28,7 +28,7 @@ def main(args):
     subworkflow_files = os.path.join("snakemake-workflows", SUBWORKFLOW_NAME, "*")
     
     for workflow_file in glob.glob(subworkflow_files):
-        worfklow_file_path = os.path.join("snakemake-workflows", SUBWORKFLOW_NAME, workflow_file) 
+        workflow_file_path = os.path.join("snakemake-workflows", SUBWORKFLOW_NAME, workflow_file) 
         os.symlink(workflow_file_path, workflow_file)
     logging.info("Added snakemake-workflows repo {0} as submodule.".format(WORKFLOW_REPO))
 
