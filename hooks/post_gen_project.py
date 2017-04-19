@@ -25,11 +25,12 @@ def main(args):
 
     # Add snakemake-workflows as submodule
     os.system('git submodule add https://github.com/{} snakemake-workflows'.format(WORKFLOW_REPO))
-    subworkflow_files = os.path.join("snakemake-workflows", "workflows", SUBWORKFLOW_NAME)
+    subworkflow_files = os.path.join(os.path.join("snakemake-workflows", "workflows"), SUBWORKFLOW_NAME)
     
     for workflow_file_path in glob.glob(subworkflow_files + "/*"):
         workflow_file_name = os.path.basename(workflow_file_path) 
-        os.symlink(workflow_file_path, workflow_file_name)
+        if not workflow_file_name == "Snakefile":
+            os.symlink(workflow_file_path, workflow_file_name)
     logging.info("Added snakemake-workflows repo {0} as submodule.".format(WORKFLOW_REPO))
 
 if __name__ == "__main__":
