@@ -20,13 +20,13 @@ def main(args):
 
     # Add toolbox as submodule
     os.system('git submodule add https://github.com/{} toolbox'.format(TOOLBOX_GITHUB_REPO))
-    logging.info("Added toolbox repo {0} at {1} as submodule.".format(TOOLBOX_GITHUB_REPO, TOOLBOX_COMMIT))
+    logging.info("Added toolbox repo {0} as submodule.".format(TOOLBOX_GITHUB_REPO))
 
     # Add snakemake-workflows as submodule
     os.system('git submodule add https://github.com/{} snakemake-workflows'.format(WORKFLOW_REPO))
     subworkflow_files = os.path.join("snakemake-workflows", SUBWORKFLOW_NAME, "*")
     os.symlink(subworkflow_files, ".")
-    logging.info("Added snakemake-workflows repo {0} at {1} as submodule.".format(WORKFLOW_REPO, WORKFLOW_COMMIT))
+    logging.info("Added snakemake-workflows repo {0} as submodule.".format(WORKFLOW_REPO))
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
