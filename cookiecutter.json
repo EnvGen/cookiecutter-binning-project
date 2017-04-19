@@ -1,7 +1,7 @@
 {
     "project": "binning-project",
     "snakemake_workflows_repo": "EnvGen/snakemake-workflows",
-    "snakemake_subworkflows_name": "large_coassembly",
+    "snakemake_subworkflow_name": "large_coassembly",
     "toolbox_dir": "toolbox",
     "toolbox_github_repo": "EnvGen/toolbox",
     "github_project_remote": "git@github.com:alneberg/binning-mimebs.git"
