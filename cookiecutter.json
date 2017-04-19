@@ -1,12 +1,8 @@
 {
     "project": "binning-project",
     "snakemake_workflows_repo": "EnvGen/snakemake-workflows",
-    "workflow_commit": "master",
+    "snakemake_subworkflows_name": "large_coassembly",
+    "toolbox_dir": "toolbox",
     "toolbox_github_repo": "EnvGen/toolbox",
-    "toolbox_commit": "master",
-    "assembly_dir": "data/contigs",
-    "fastq_dir": "data/reads",
     "github_project_remote": "git@github.com:alneberg/binning-mimebs.git",
-    "uppmax_project_billing": "b2010008",
-    "logfile_location": "~/logs/binning-project-x.txt"
 }
